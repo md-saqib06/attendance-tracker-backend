@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import { attendanceRoutes } from './routes/attendance.routes';
 
+require('dotenv').config();
+
 const app = express();
 
 // Middleware
@@ -13,9 +15,7 @@ app.use(express.json());
 app.use('/api/attendance', attendanceRoutes);
 
 // Database connection
-const MONGODB_URI = 'mongodb://root:2A830Fixnuh9iZebDLQhNGSyWPdztvkShLhytB8Rfn8xpMwfYFPDn6rJJIru2jRh@82.180.144.165:5432/?directConnection=true';
-const db = process.env.MONGODB_URI;
-console.log(db)
+const MONGODB_URI = process.env.MONGODB_URI!;
 
 mongoose.connect(MONGODB_URI)
     .then(() => console.log('Connected to MongoDB'))
