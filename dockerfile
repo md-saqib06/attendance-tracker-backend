@@ -1,4 +1,5 @@
-FROM oven/bun
+FROM oven/bun:latest
 COPY . .
 RUN bun install
-CMD ["bun", "./src/app.ts"]
+RUN bun run build
+CMD ["bun", "run", "start"]
