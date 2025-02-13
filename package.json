@@ -2,7 +2,7 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "./src/app.ts",
+  "main": "./dist/app.js",
   "scripts": {
     "dev": "bun run src/app.ts",
     "build": "bunx tsc",
@@ -15,7 +15,7 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
+  "type": "module",
   "bugs": {
     "url": "https://github.com/md-saqib06/attendance-tracker-backend/issues"
   },
