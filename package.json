@@ -4,9 +4,9 @@
   "description": "",
   "main": "./src/app.ts",
   "scripts": {
-    "dev": "bun run src/index.ts",
-    "build": "bun run tsc",
-    "start": "node dist/index.js"
+    "dev": "bun run src/app.ts",
+    "build": "bunx tsc",
+    "start": "node dist/app.js"
   },
   "repository": {
     "type": "git",
@@ -34,6 +34,7 @@
   },
   "devDependencies": {
     "@types/bun": "^1.2.2",
+    "@types/node": "^22.13.2",
     "nodemon": "^3.1.9"
   }
 }

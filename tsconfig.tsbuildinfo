@@ -1,0 +1,1 @@
+{"root":["./src/app.ts","./src/controllers/attendance.controller.ts","./src/models/attendance.model.ts","./src/models/userdetails.model.ts","./src/routes/attendance.routes.ts","./src/types/attendance.types.ts","./src/types/environment.d.ts"],"version":"5.7.3"}

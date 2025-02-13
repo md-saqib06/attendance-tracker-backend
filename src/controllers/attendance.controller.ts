@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { Attendance } from '../models/attendance.model';
 
 class AttendanceController {
@@ -19,13 +19,13 @@ class AttendanceController {
     }
 
     // Get all attendance records
-    static async getAll(req: Request, res: Response) {
+    static async getAll(res: Response) {
         const records = await Attendance.find().sort({ date: -1 });
         res.json(records);
     }
 
     // Get monthly statistics
-    static async getMonthlyStats(req: Request, res: Response) {
+    static async getMonthlyStats(res: Response) {
         const stats = await Attendance.aggregate([
             {
                 $group: {
