@@ -4,11 +4,12 @@ import { Attendance } from '../models/attendance.model';
 class AttendanceController {
     // Create new attendance record
     static async create(req: Request, res: Response) {
-        const { date, classes } = req.body;
+        const { emailAddress, date, classes } = req.body;
         console.log(req.body)
         const status = classes && classes.length > 0 ? 'Present' : 'Absent';
 
         const attendance = new Attendance({
+            emailAddress,
             date: new Date(date),
             classes,
             status

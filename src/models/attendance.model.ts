@@ -1,12 +1,17 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
 interface IAttendance extends Document {
+    emailAddress: String,
     date: Date;
     classes: string[];
     status: 'Present' | 'Absent';
 }
 
 const AttendanceSchema = new Schema({
+    emailAddress: {
+        type: String,
+        required: true,
+    },
     date: {
         type: Date,
         required: true,
