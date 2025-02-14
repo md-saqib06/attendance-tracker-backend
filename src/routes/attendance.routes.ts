@@ -11,8 +11,8 @@ const asyncHandler = (fn: Function) => (req: Request, res: Response, next: NextF
 
 // Routes
 router.post('/', asyncHandler(AttendanceController.create));
-router.get('/', asyncHandler(AttendanceController.getAll));
-router.get('/stats/monthly', asyncHandler(AttendanceController.getMonthlyStats));
+router.get('/:emailAddress', asyncHandler(AttendanceController.getAll));
+router.get('/stats/monthly/:emailAddress', asyncHandler(AttendanceController.getMonthlyStats));
 router.put('/:id', asyncHandler(AttendanceController.update));
 router.delete('/:id', asyncHandler(AttendanceController.delete));
 
