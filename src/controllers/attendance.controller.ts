@@ -84,13 +84,11 @@ class AttendanceController {
         }
     }
 
-
     // Update attendance record
     static async update(req: Request, res: Response) {
         const { id } = req.params;
-        console.log(id)
         const { classes } = req.body;
-        const status = classes.length > 0 ? 'Present' : 'Absent';
+        const status = classes && classes.length > 0 ? 'Present' : 'Absent';
 
         const attendance = await Attendance.findByIdAndUpdate(
             id,
