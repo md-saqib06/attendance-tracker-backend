@@ -21,15 +21,6 @@ mongoose.connect(MONGODB_URI)
     .then(() => console.log('Connected to MongoDB'))
     .catch(err => console.error('MongoDB connection error:', err));
 
-
-
-// Error handling middleware
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
-    console.log("\n\nRequest:\n", req)
-    console.error("\n\nError:\n", err.stack);
-    res.status(500).json({ message: 'Something went wrong!' });
-});
-
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
