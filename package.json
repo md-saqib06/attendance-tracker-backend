@@ -4,7 +4,7 @@
   "description": "",
   "main": "./dist/app.js",
   "scripts": {
-    "dev": "bun run src/app.ts",
+    "dev": "bun --hot src/app.ts",
     "build": "bunx tsc",
     "start": "node dist/app.js"
   },

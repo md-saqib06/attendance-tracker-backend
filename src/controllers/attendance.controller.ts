@@ -1,21 +1,76 @@
 import type { Request, Response } from 'express';
 import { Attendance } from '../models/attendance.model';
 
+interface AttendanceRecord {
+    date: string;
+    attendedClasses: number;
+    missedClasses: number;
+}
+
+interface MonthlyAttendance {
+    month: string;
+    Present: number;
+    Absent: number;
+}
+
+function processAttendanceData(data: any[]): MonthlyAttendance[] {
+    const attendanceMap = new Map<string, { Present: number; Absent: number }>();
+
+    data.forEach(({ date, attendedClasses, missedClasses }) => {
+        const month = new Date(date).toLocaleString('en', { month: 'short' });
+        if (!attendanceMap.has(month)) {
+            attendanceMap.set(month, { Present: 0, Absent: 0 });
+        }
+        const record = attendanceMap.get(month)!;
+        record.Present += attendedClasses;
+        record.Absent += missedClasses;
+    });
+
+    return Array.from(attendanceMap, ([month, { Present, Absent }]) => ({ month, Present, Absent }));
+}
+
 class AttendanceController {
     // Create new attendance record
     static async create(req: Request, res: Response) {
-        const { emailAddress, date, classes } = req.body;
+        const { emailAddress, date, classes, totalClasses } = req.body;
         const status = classes && classes.length > 0 ? 'Present' : 'Absent';
+        // const total = classes ? classes.length : 0
+        const attendedClasses = classes ? classes.length : 0
+        const missedClasses = classes && totalClasses ? totalClasses - attendedClasses : 0
 
         const attendance = new Attendance({
             emailAddress,
             date: new Date(date),
             classes,
+            totalClasses,
+            attendedClasses,
+            missedClasses,
             status
         });
 
         const newAttendance = await attendance.save();
         res.status(201).json(newAttendance);
+    }
+
+    // Update attendance record
+    static async update(req: Request, res: Response) {
+        const { id } = req.params;
+        const { classes, totalClasses } = req.body;
+        const status = classes && classes.length > 0 ? 'Present' : 'Absent';
+        const attendedClasses = classes ? classes.length : 0
+        const missedClasses = classes && totalClasses ? totalClasses - attendedClasses : 0
+
+        const attendance = await Attendance.findByIdAndUpdate(
+            id,
+            { classes, status, attendedClasses, missedClasses, },
+            { new: true }
+        );
+
+        if (!attendance) {
+            return res.status(404).json({ message: 'Attendance record not found' });
+        }
+
+        res.json(attendance);
     }
 
     // Get all attendance records
@@ -39,68 +94,26 @@ class AttendanceController {
     // Get monthly statistics
     static async getMonthlyStats(req: Request, res: Response) {
         try {
-            const { emailAddress } = req.params; // Get email from request params
+            const { emailAddress } = req.params;
 
             if (!emailAddress) {
-                return res.status(400).json({ message: "Email address is required" });
+                res.status(400).json({ message: "Email is required!" });
             }
 
-            const stats = await Attendance.aggregate([{
-                $match: { email: emailAddress } // Filter records by email
-            }, {
-                $group: {
-                    _id: {
-                        year: { $year: "$date" },
-                        month: { $month: "$date" }
-                    },
-                    present: {
-                        $sum: {
-                            $cond: [{ $eq: ["$status", "Present"] }, 1, 0]
-                        }
-                    },
-                    absent: {
-                        $sum: {
-                            $cond: [{ $eq: ["$status", "Absent"] }, 1, 0]
-                        }
-                    },
-                    total: { $sum: 1 }
-                }
-            }, {
-                $project: {
-                    _id: 0,
-                    year: "$_id.year",
-                    month: "$_id.month",
-                    present: 1,
-                    absent: 1,
-                    total: 1
-                }
-            }, { $sort: { year: 1, month: 1 } }
-            ]);
-            res.json(stats);
+            const records = await Attendance.find({ emailAddress: emailAddress }).sort({ date: +1 });
+            const extractedData: AttendanceRecord[] = records.map((item: any) => ({
+                date: item.date,
+                attendedClasses: item.attendedClasses,
+                missedClasses: item.missedClasses
+            }));
 
-        } catch (error) {
-            console.error("Error fetching monthly stats:", error);
-            res.status(500).json({ message: "Internal Server Error" });
+            const attendanceData = processAttendanceData(extractedData);
+            res.json(attendanceData);
+
+        } catch (err) {
+            console.error("Error Fetching Attendance: ", err);
+            res.status(500).json({ message: "Internal Server Error" })
         }
-    }
-
-    // Update attendance record
-    static async update(req: Request, res: Response) {
-        const { id } = req.params;
-        const { classes } = req.body;
-        const status = classes && classes.length > 0 ? 'Present' : 'Absent';
-
-        const attendance = await Attendance.findByIdAndUpdate(
-            id,
-            { classes, status },
-            { new: true }
-        );
-
-        if (!attendance) {
-            return res.status(404).json({ message: 'Attendance record not found' });
-        }
-
-        res.json(attendance);
     }
 
     // Delete attendance record
