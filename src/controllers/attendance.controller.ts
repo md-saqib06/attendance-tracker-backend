@@ -34,7 +34,6 @@ class AttendanceController {
     static async create(req: Request, res: Response) {
         const { emailAddress, date, classes, totalClasses } = req.body;
         const status = classes && classes.length > 0 ? 'Present' : 'Absent';
-        // const total = classes ? classes.length : 0
         const attendedClasses = classes ? classes.length : 0
         const missedClasses = classes && totalClasses ? totalClasses - attendedClasses : 0
 
