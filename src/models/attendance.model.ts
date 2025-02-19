@@ -4,6 +4,7 @@ interface IAttendance extends Document {
     emailAddress: String,
     date: Date,
     classes: string[],
+    canceledClasses: string[],
     totalClasses: number,
     attendedClasses: number,
     missedClasses: number,
@@ -20,6 +21,10 @@ const AttendanceSchema = new Schema({
         required: true,
     },
     classes: [{
+        type: String,
+        required: true,
+    }],
+    canceledClasses: [{
         type: String,
         required: true,
     }],

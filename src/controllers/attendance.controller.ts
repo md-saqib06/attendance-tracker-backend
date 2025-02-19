@@ -32,7 +32,7 @@ function processAttendanceData(data: any[]): MonthlyAttendance[] {
 class AttendanceController {
     // Create new attendance record
     static async create(req: Request, res: Response) {
-        const { emailAddress, date, classes, totalClasses } = req.body;
+        const { emailAddress, date, classes, canceledClasses, totalClasses } = req.body;
         const status = classes && classes.length > 0 ? 'Present' : 'Absent';
         const attendedClasses = classes ? classes.length : 0
         const missedClasses = classes && totalClasses ? totalClasses - attendedClasses : 0
@@ -41,6 +41,7 @@ class AttendanceController {
             emailAddress,
             date: new Date(date),
             classes,
+            canceledClasses,
             totalClasses,
             attendedClasses,
             missedClasses,
@@ -54,14 +55,14 @@ class AttendanceController {
     // Update attendance record
     static async update(req: Request, res: Response) {
         const { id } = req.params;
-        const { classes, totalClasses } = req.body;
+        const { classes, canceledClasses, totalClasses } = req.body;
         const status = classes && classes.length > 0 ? 'Present' : 'Absent';
         const attendedClasses = classes ? classes.length : 0
         const missedClasses = classes && totalClasses ? totalClasses - attendedClasses : 0
 
         const attendance = await Attendance.findByIdAndUpdate(
             id,
-            { classes, status, attendedClasses, missedClasses, },
+            { classes, canceledClasses, status, attendedClasses, missedClasses, totalClasses },
             { new: true }
         );
 
